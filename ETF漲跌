@@ -1,0 +1,35 @@
+import requests
+from bs4 import BeautifulSoup
+
+def etf_price_change(etf_id):#抓etf漲跌的函式
+  #利用header請求
+  headers={'user-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:65.0) Gecko/20100101 Firefox/65.0'}
+    
+  proxies = {'http': 'http://brd-customer-hl_a2b4fb4e-zone-residential:dt5kr2aam01t@zproxy.lum-superproxy.io:22225',
+            'https': 'http://brd-customer-hl_a2b4fb4e-zone-residential:dt5kr2aam01t@zproxy.lum-superproxy.io:22225'}
+  url = 'https://goodinfo.tw/tw/ShowK_Chart.asp?STOCK_ID={}&CHT_CAT2=DATE'.format(etf_id)
+  #取得網站html
+  response = requests.get(url, headers=headers, proxies=proxies, verify=False)
+  html = response.content
+  soup = BeautifulSoup(html, 'html.parser')
+  #篩出股票名稱、漲跌%
+  table = soup.find('table', {'class': "b1 p4_0 r0_10 row_bg_2n row_mouse_over"})
+  center_elements = table.find_all(align='center')
+
+  list = []
+  for el in center_elements:
+      tds = el.find_all('td')
+      for td in tds:
+          list.append(td.text)
+      # 進行資料解析或存儲等操作
+    
+  for i in range(0, len(list), 12):
+      new_list = [list[i:i+12] for i in range(0, len(list), 22)]
+  
+  list = {}
+  for i in new_list:
+    #print(i[6])
+    list[i[0]] = [float(i[6])]
+  
+  
+  return list
