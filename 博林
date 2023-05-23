@@ -1,0 +1,969 @@
+import sys
+#可用數學運算
+import numpy as np
+import statistics as st
+#可去除nan資料
+from math import isnan
+from itertools import filterfalse
+
+txtnum=0
+
+def opentxt(data,variablename):   
+    global txtnum
+    output_text = str(data)
+    # 開啟文件並寫入內容
+    str_="output"+str(txtnum)+" "+variablename+".txt"
+    with open(str_, 'w') as file:
+        file.write(output_text)
+    print(variablename,"在",str_,"裡")
+    txtnum+=1
+
+
+def reeddata():
+    # 開啟文件
+    file_path = "C:/Users/builinxu/Desktop/python/資料/0050成分股3個月日股價2.txt"  # 替換為您的文件路徑
+    file = open(file_path, 'r')
+    deal=file.read()
+    # 讀取文件內容
+
+    original = eval(deal)
+    #print(original)
+
+    # 關閉文件
+    file.close()
+
+    return original #輸出資料型態dict
+
+
+
+#original={'2330': {'0516': [505.0, 39.35, 12.83], '0515': [495.5, 39.35, 12.59], '0512': [496.0, 39.35, 12.61], '0511': [499.0, 39.34, 12.68], '0510': [503.0, 39.34, 12.79], '0509': [510.0, 39.34, 12.96], '0508': [504.0, 39.34, 12.81], '0505': [500.0, 39.34, 12.71], '0504': [498.0, 39.34, 12.66], '0503': [496.0, 39.33, 12.61], '0502': [501.0, 39.33, 12.74], '0428': [502.0, 39.33, 12.76], '0427': [493.5, 39.33, 12.55], '0426': [491.5, 39.33, 12.5], '0425': [498.0, 39.32, 12.66], '0424': [507.0, 39.32, 12.89], '0421': [511.0, 39.32, 13.0], '0420': [513.0, 39.32, 13.05], '0419': [510.0, 39.32, 12.97], '0418': [515.0, 39.32, 13.1], '0417': [520.0, 39.31, 13.23], '0414': [516.0, 39.31, 13.13], '0413': [510.0, 39.31, 12.97], '0412': [520.0, 39.31, 13.23], '0411': [524.0, 39.31, 13.33], '0410': [529.0, 39.3, 13.46], '0407': [531.0, 39.3, 13.51], '0406': [530.0, 39.3, 13.49], '0331': [533.0, 39.3, 13.56], '0330': [535.0, 39.3, 13.61], '0329': [530.0, 39.3, 13.49], '0328': [525.0, 39.29, 13.36], '0327': [531.0, 39.29, 13.51], '0324': [539.0, 39.29, 13.72], '0323': [538.0, 39.29, 13.69], '0322': [533.0, 39.29, 13.57], '0321': [517.0, 39.28, 13.16], '0320': [512.0, 39.28, 13.03], '0317': [518.0, 39.28, 13.19], '0316': [505.0, 39.28, 12.86], '0315': [511.0, 39.28, 13.01], '0314': [510.0, 39.28, 12.99], '0313': [516.0, 39.27, 13.14], '0310': [513.0, 39.27, 13.06], '0309': [522.0, 39.27, 13.29], '0308': [521.0, 39.27, 13.27], '0307': [524.0, 39.27, 13.34], '0306': [521.0, 39.26, 13.27], '0303': [516.0, 39.26, 13.14], '0302': [519.0, 39.26, 13.22], '0301': [522.0, 39.26, 13.3], '0224': [511.0, 39.26, 13.02], '0223': [518.0, 39.25, 13.2], '0222': [507.0, 39.25, 12.92], '0221': [516.0, 39.25, 13.15], '0220': [517.0, 39.25, 13.17], '0217': [518.0, 39.25, 13.2], '0216': [528.0, 39.25, 13.45], '0215': [525.0, 39.24, 13.38], 'weight': 47.29}, '2317': {'0516': [102.0, 9.05, 11.27], '0515': [102.0, 9.06, 11.25], '0512': [102.5, 9.08, 11.29], '0511': [105.0, 9.09, 11.55], '0510': [106.5, 9.11, 11.69], '0509': [106.5, 9.12, 11.68], '0508': [105.0, 9.13, 11.49], '0505': [105.0, 9.15, 11.48], '0504': [105.0, 9.16, 11.46], '0503': [105.5, 9.18, 11.5], '0502': [106.0, 9.19, 11.53], '0428': [104.5, 9.21, 11.35], '0427': [103.5, 9.22, 11.23], '0426': [103.5, 9.23, 11.21], '0425': [103.0, 9.25, 11.14], '0424': [103.5, 9.26, 11.17], '0421': [104.0, 9.28, 11.21], '0420': [104.5, 9.29, 11.25], '0419': [104.0, 9.3, 11.18], '0418': [104.5, 9.32, 11.21], '0417': [104.0, 9.33, 11.14], '0414': [104.5, 9.35, 11.18], '0413': [103.0, 9.36, 11.0], '0412': [102.5, 9.38, 10.93], '0411': [103.5, 9.39, 11.02], '0410': [103.0, 9.4, 10.95], '0407': [103.0, 9.42, 10.94], '0406': [103.5, 9.43, 10.97], '0331': [104.0, 9.45, 11.01], '0330': [104.5, 9.46, 11.05], '0329': [103.5, 9.47, 10.92], '0328': [103.0, 9.49, 10.86], '0327': [103.5, 9.5, 10.89], '0324': [105.5, 9.52, 11.09], '0323': [103.5, 9.53, 10.86], '0322': [103.5, 9.55, 10.84], '0321': [103.5, 9.56, 10.83], '0320': [102.5, 9.57, 10.71], '0317': [103.5, 9.59, 10.8], '0316': [102.0, 9.6, 10.62], '0315': [102.5, 9.62, 10.66], '0314': [102.0, 9.63, 10.59], '0313': [103.0, 9.64, 10.68], '0310': [102.0, 9.66, 10.56], '0309': [102.5, 9.67, 10.6], '0308': [104.0, 9.69, 10.74], '0307': [105.0, 9.7, 10.82], '0306': [103.5, 9.71, 10.65], '0303': [102.5, 9.73, 10.54], '0302': [102.5, 9.74, 10.52], '0301': [102.0, 9.76, 10.45], '0224': [101.0, 9.77, 10.34], '0223': [103.0, 9.79, 10.53], '0222': [102.0, 9.8, 10.41], '0221': [102.5, 9.81, 10.44], '0220': [103.0, 9.83, 10.48], '0217': [103.5, 9.84, 10.52], '0216': [103.5, 9.86, 10.5], '0215': [102.5, 9.87, 10.38], 'weight': 4.58}, '2454': {'0516': [680.0, 64.16, 10.6], '0515': [680.0, 64.29, 10.58], '0512': [673.0, 64.41, 10.45], '0511': [668.0, 64.54, 10.35], '0510': [668.0, 64.67, 10.33], '0509': [677.0, 64.8, 10.45], '0508': [675.0, 64.92, 10.4], '0505': [675.0, 65.05, 10.38], '0504': [668.0, 65.18, 10.25], '0503': [680.0, 65.3, 10.41], '0502': [671.0, 65.43, 10.25], '0428': [665.0, 65.56, 10.14], '0427': [662.0, 65.69, 10.08], '0426': [649.0, 65.81, 9.86], '0425': [650.0, 65.94, 9.86], '0424': [676.0, 66.07, 10.23], '0421': [665.0, 66.2, 10.05], '0420': [673.0, 66.32, 10.15], '0419': [675.0, 66.45, 10.16], '0418': [688.0, 66.58, 10.33], '0417': [709.0, 66.7, 10.63], '0414': [748.0, 66.83, 11.19], '0413': [750.0, 66.96, 11.2], '0412': [758.0, 67.09, 11.3], '0411': [756.0, 67.21, 11.25], '0410': [742.0, 67.34, 11.02], '0407': [749.0, 67.47, 11.1], '0406': [753.0, 67.59, 11.14], '0331': [787.0, 67.72, 11.62], '0330': [778.0, 67.85, 11.47], '0329': [773.0, 67.98, 11.37], '0328': [766.0, 68.1, 11.25], '0327': [780.0, 68.23, 11.43], '0324': [790.0, 68.36, 11.56], '0323': [793.0, 68.48, 11.58], '0322': [781.0, 68.61, 11.38], '0321': [771.0, 68.74, 11.22], '0320': [770.0, 68.87, 11.18], '0317': [773.0, 68.99, 11.2], '0316': [756.0, 69.12, 10.94], '0315': [758.0, 69.25, 10.95], '0314': [761.0, 69.38, 10.97], '0313': [764.0, 69.5, 10.99], '0310': [756.0, 69.63, 10.86], '0309': [767.0, 69.76, 11.0], '0308': [768.0, 69.88, 10.99], '0307': [788.0, 70.01, 11.26], '0306': [784.0, 70.14, 11.18], '0303': [775.0, 70.27, 11.03], '0302': [775.0, 70.39, 11.01], '0301': [791.0, 70.52, 11.22], '0224': [723.0, 70.65, 10.23], '0223': [745.0, 70.77, 10.53], '0222': [713.0, 70.9, 10.06], '0221': [725.0, 71.03, 10.21], '0220': [726.0, 71.16, 10.2], '0217': [723.0, 71.28, 10.14], '0216': [711.0, 71.41, 9.96], '0215': [710.0, 71.54, 9.92],'weight': 4.32}}
+#original={'2330': {'0516': ['505', 39.35, 12.83], '0515': [495.5, 39.35, 12.59]}}
+
+    #用子程式讀資料
+original=reeddata()
+###############opentxt(original,"originaldata")
+
+    #variance股票列表
+stocklist = list(original.keys())
+
+
+zerotime=[]
+errortime_=[]
+errortimestock=[]
+
+def checkdata(original):
+            #確認資料是否正確
+        
+    list_=[]
+
+    #print(stocklist)
+
+        #1. check weight
+
+    TF=True
+    debug={}
+    num=0
+
+    if TF:
+        for i in stocklist:
+            if "weight" not in original[i]:
+                num+=1
+                debug[i]="Weight 錯誤"
+                TF=False
+
+    if not(TF):
+        print("有股票沒有權重")
+        print("權重錯誤數",num)
+        print("這些股票沒有權重",debug)
+        sys.exit()
+    else:
+        for i in stocklist:
+            original[i]["weight"]=original[i]["weight"]/100
+        print("權重沒有錯誤")
+        print("")
+
+
+
+
+
+    timenum=[]
+    for i in stocklist:
+        timenum.append(len(list(original[i].keys()))-1)
+    
+    
+
+    max_=np.max(timenum)
+    index=timenum.index(max_)
+
+    timelist=list(original[stocklist[index]].keys()) #時間
+    del timelist[-1]
+    list_.append(timelist)
+    list_.append(timenum)
+    
+    def errordata(original):
+        #errordata timenum timelist
+        errortime={}
+        #處理時間
+        middel=[]
+        for i in timelist:
+            #k=0
+            for j in stocklist:
+                if i not in original[j]:
+                    original[j][i]=[]
+                    middel.append(i)
+                    errortime[j]=middel
+                #k+=1
+        #print(errortime)
+        return errortime
+
+    #print(timelist)
+
+
+        #2. check time
+
+    TF=True
+
+    if True:
+        time={}
+        for i in stocklist:
+            time[i]=list(original[i].keys())
+            del time[i][-1] 
+
+        debug={}
+        bug=[]
+        num=0
+
+        for i in timelist:
+            for j in stocklist:
+                bug=[]
+                check=True
+                if not(i in time[j]):
+                    bug.append(j)
+                    TF=False
+                    num=num+1
+                    debug[i]=bug
+        
+        d=len(timelist)
+        list_.append(d)
+
+        if not(TF):
+
+            #print("沒有權重錯誤")
+            print("有時間錯誤")
+            print("時間錯誤數",num)
+            print("這些有時間錯誤",debug)
+            #print(timenum)
+            print("")
+            global errortime_
+            global errortimestock
+            errortime_=errordata(original)
+            errortimestock=list(errortime_.keys())
+            #list_.append(errortime_)
+            #list_.append(errortimestock)
+            TF=False
+            #sys.exit()
+        else:
+            print("沒有時間錯誤")            
+            print("")
+
+            
+            
+            
+
+        #3. check data
+
+    
+    
+
+    debug={}
+    num=0
+
+    if TF: 
+        #print(errortimestock)
+        for i in stocklist:
+            for j in timelist:
+                bug=[]
+                check=True
+                for k in range(0,3):
+                    if not(isinstance(original[i][j][k], float) or isinstance(original[i][j][k],int)):
+                        num=num+1
+                        
+                        if k==0:
+                            bug.append("股價錯誤")
+                        if k==1:
+                            bug.append("EPS錯誤")
+                        if k==2:
+                            bug.append("PER錯誤")
+                        #print(bug)
+                        
+                        debug[i]={}
+                        debug[i][j]=bug 
+
+    if not(TF): 
+        for i in stocklist:
+            if i not in errortimestock:
+                for j in timelist:
+                    bug=[]
+                    check=True
+                    for k in range(0,3):
+                        if not(isinstance(original[i][j][k], float) or isinstance(original[i][j][k],int)):
+                            num=num+1
+                            
+                            if k==0:
+                                bug.append("股價錯誤")
+                            if k==1:
+                                bug.append("EPS錯誤")
+                            if k==2:
+                                bug.append("PER錯誤")
+                            #print(bug)
+                            
+                            debug[i]={}
+                            debug[i][j]=bug 
+            else:
+                realtime=[] #可能要變成global??
+                for n in timelist:
+                    if n not in errortime_[i]:
+                        realtime.append(n)
+
+
+                for j in realtime:
+                    bug=[]
+                    check=True
+                    for k in range(0,3):
+                        if not(isinstance(original[i][j][k], float) or isinstance(original[i][j][k],int)):
+                            num=num+1
+                                
+                            if k==0:
+                                bug.append("股價錯誤")
+                            if k==1:
+                                bug.append("EPS錯誤")
+                            if k==2:
+                                bug.append("PER錯誤")
+                            #print(bug)
+                                
+                            debug[i]={}
+                            debug[i][j]=bug                     
+                
+                
+    if num==0:
+        TF=True
+    else:
+        TF=False
+
+    if not(TF):
+        print("有float錯誤")
+        print("float錯誤數",num) 
+        print("這些有float錯誤",debug)
+        print("")
+        #sys.exit()
+        return list_
+
+    else:
+        print("沒有float錯誤")
+        print("")
+        return list_ #[timelist,timenum,d]
+
+if True: #整理資料開關
+    checkdataresult=checkdata(original)
+    #print(checkdataresult)
+    timelist=checkdataresult[0]
+    #print(timelist)
+    timenum=checkdataresult[1]
+    #print(checkdataresult)
+    d=checkdataresult[2]
+    #print(errortime_)
+    #print(errortimestock)
+    #errortime_=checkdataresult[3]
+    #errortimestock=checkdataresult[4]
+
+
+
+if False: #timelist開關
+    list_=[]
+    timenum=[]
+    for i in stocklist:
+        timenum.append(len(list(original[i].keys()))-1)
+    
+    
+
+    max_=np.max(timenum)
+    index=timenum.index(max_)
+
+    timelist=list(original[stocklist[index]].keys()) #時間
+    del timelist[-1]
+    list_.append(timelist)
+    list_.append(timenum)   
+    print(timelist)
+
+#sys.exit()
+
+def arrangedata1(original):
+    #整理資料1
+
+    data={}
+    for i in stocklist:
+        data[i]={"時間":{}}
+        for j in timelist:
+            data[i]["時間"][j]={"股價":original[i][j][0], "EPS": original[i][j][1],"PER":original[i][j][2]}
+            
+        data[i]["比重"]=original[i]['weight']
+    print(data)
+    print(".","\n")
+    return data #回傳資料型態dict
+
+
+
+def arrangedata2(original):
+    #整理資料2
+    #print(errortime_,"--")
+
+    #print(errortimestock,"---")
+
+    data={}
+    global zerotime
+
+    for i in stocklist:
+        if i not in errortimestock:
+            data[i]={"時間":{}}
+            for j in timelist:
+                data[i]["時間"][j]={"股價":original[i][j][0], "EPS": original[i][j][1],"PER":original[i][j][2]}
+                
+            data[i]["比重"]=original[i]['weight']
+        else:
+            realtime=[] #可能需要變成global
+            for n in timelist:
+                if n not in errortime_[i]:
+                    realtime.append(n)
+
+
+            data[i]={"時間":{}}
+            for j in realtime:
+                data[i]["時間"][j]={"股價":original[i][j][0], "EPS": original[i][j][1],"PER":original[i][j][2]}
+                
+            data[i]["比重"]=original[i]['weight']
+
+            if len(realtime)==0:
+                zerotime.append(i)
+
+    
+    #print("整理後的資料",data)
+    ###############opentxt(data,"整理後的data")
+    #print(".","\n")
+    return data #回傳資料型態dict
+
+
+
+
+
+data=arrangedata2(original) #用子程式整理資料
+
+def checkarrangedata2(data):
+    #check arrangedata2是否錯誤
+    stock_=list(data.keys())
+    stock_num_=len(stock_)
+    time_num_=[]
+    for i in stock_:
+        time_num_.append(len(data[i]["時間"].keys()))
+    #print(time_num_)
+    list_=[]
+    list_.append(stock_num_)
+    list_.append(time_num_)
+
+    return list_
+#print(checkarrangedata2(data))
+
+#sys.exit() #封印
+
+
+#data = {"2330": {"時間": {"20130512": {"股價": 496, "EPS": 39.35}, "20130511": {"股價": 499, "EPS": 39.35}, "20130510": {"股價": 503, "EPS": 39.35}}, "財務分析": {"無": "無"}, "比重":0.2}, "2881": {"時間":{"20130512": {"股價": 59, "EPS": 3.54},
+#                                                                                                                                                                            "20130511": {"股價": 59.5, "EPS": 3.54}, "20130510": {"股價": 59.2, "EPS": 3.54}}, "比重":0.3}, "2882": {"時間":{"20130512": {"股價": 42.65, "EPS": 2.58}, "20130511": {"股價": 43.7, "EPS": 2.58}, "20130510": {"股價": 43.05, "EPS": 2.58}}, "比重":0.5}}
+#print(data)
+
+rf=float(input("請輸入無風險利率無風險利率")) #variance無風險利率
+
+
+
+retrun = {} #variance個股報酬
+stockstatistic={} #variance個股的statistic
+statistic={} #variance工具
+
+#stocklist = list(data.keys()) #variance股票列表
+
+def checkweight(data):
+    #確認比重
+    TF=True
+
+    sum_=0.0 #variance工具
+    for i in stocklist:
+        rationum=data[i]["比重"]
+        sum_=sum_+rationum
+    if sum_!=1:
+
+        print("權重加總不為1","加總為",sum_)
+        #sys.exit()
+
+        if not(sum_>=0.99 and sum_<=1.01):
+            print("權重誤差太大")
+            sys.exit()
+        else:
+            print("但還可接受，繼續運算")
+            if len(zerotime)!=0:
+                TF=False
+        
+    #    else:
+    #        if len(zerotime)!=0:
+    #            print("應為有股票沒有資料，對權重進行調整")
+    #            TF=False
+    #            adjustweight=1.0
+
+    #            for i in zerotime:
+    #                adjustweight=adjustweight-data[i]["比重"]
+    #                data[i]["比重"]=0.0
+    #            for i in stocklist:
+    #                if i not in zerotime:
+    #                    data[i]["比重"]=(data[i]["比重"]/adjustweight)
+    else:
+        if len(zerotime)!=0:
+            TF=False
+        print("權重總和為1")
+    #    if len(zerotime)!=0:
+    #        adjustweight=1.0
+
+    #        for i in zerotime:
+    #            adjustweight=adjustweight-data[i]["比重"]
+    #            data[i]["比重"]=0.0
+    #        for i in stocklist:
+    #            if i not in zerotime:
+    #                data[i]["比重"]=(data[i]["比重"]/adjustweight)
+    
+    return TF
+    #sum_=0 #龜苓膏
+
+def adjustweight(data):
+        
+    print("因為有股票沒有資料，對權重進行調整")
+    adjustweight=1.0
+
+    for i in zerotime:
+        adjustweight=adjustweight-data[i]["比重"]
+        data[i]["比重"]=0.0
+    for i in stocklist:
+        if i not in zerotime:
+            data[i]["比重"]=(data[i]["比重"]/adjustweight)
+    return data
+
+    
+
+TFweight=checkweight(data)
+#print(TFweight)
+if not(TFweight):
+    data=adjustweight(data)
+    ###############opentxt(data,"adjustdata")
+#print(data)
+
+#sys.exit() #封印
+#-----------------------------------------------------------------------
+#以
+#下
+#為
+#主
+#程
+#市
+#-----------------------------------------------------------------------
+#timelist = list(data[stocklist[0]]["時間"]) #variance時間列表
+#d=len(timelist)
+
+#ETF適用原本的，新的是用選擇的
+
+n=len(stocklist) #variance股票數
+
+
+retrunlist=[] #variance工具
+calculate=0.00 #variance工具
+
+#-----------------------------------------------------------------------
+#算個股retrun, retrunavg, retrunvar, retrunstd, sharpe ratio, PER, EPS
+
+for i in stocklist:
+    retrunlist=[]
+    #return
+    for j in range(0,len(timelist)-1): #算個股retrun
+
+        timelistearly=timelist[j+1] #如果時間順序不同在這邊調換
+        timelistlast=timelist[j]
+        calculate=(data[i]["時間"][timelistlast]["股價"]-data[i]["時間"][timelistearly]["股價"])/data[i]["時間"][timelistearly]["股價"]
+        retrunlist.append(calculate)
+        retrun[i]=retrunlist #從「時間最近到最不近」的retrun
+        
+    statistic["n"]=len(retrunlist)
+    statistic["avg"]=np.average(retrunlist)
+    statistic["var.s"]=np.var(retrunlist,ddof=1)
+    statistic["std.s"]=np.std(retrunlist,ddof=1)
+    statistic["Sharpe Ratio"]=(statistic["avg"]-rf)/statistic["std.s"]
+
+    sum_=0.0
+    for j in timelist:
+        EPS=data[i]["時間"][j]["EPS"]
+        sum_=EPS+sum_
+    EPSavg=sum_/d
+    
+    sum_=0.0
+    for j in timelist:
+        PER=data[i]["時間"][j]["PER"]
+        sum_=PER+sum_
+    PERavg=sum_/d
+
+    statistic["EPS"]=EPSavg
+    statistic["PER"]=PERavg
+    #print(statistic)
+    stockstatistic[i]=statistic
+    statistic={}                #{股票:{n,avg,var.s,std.s,sharperatio,EPS,PER},...}
+#print(stockstatistic)
+###############opentxt(stockstatistic,"stockstatistic")
+
+
+
+
+#-----------------------------------------------------------------------
+#對股票作排序
+#低波動,高成長率,高本益比,高股息
+
+from operator import itemgetter
+
+
+type_dict_={"低波動":[],"高成長率":[],"低本益比":[],"高股息":[]}
+type_dict_keys=list(type_dict_.keys())
+
+    #低波動，var由低到高排列
+sorted_dict_=dict(sorted(stockstatistic.items(), key=lambda x: x[1]['var.s']))
+###############opentxt(sorted_dict_,"sorted_dict_var")
+sorted_list_var=list(sorted_dict_.keys())
+sorted_dict_={}
+#print(sorted_list_var)
+
+    #高成長率，avg由高到低排列
+sorted_dict_=dict(sorted(stockstatistic.items(), key=lambda x: x[1]['avg'], reverse=True))
+###############opentxt(sorted_dict_,"sorted_dict_avg")
+sorted_list_avg=list(sorted_dict_.keys())
+sorted_dict_={}
+
+    #低本益比，PER由高到低排列
+for i in stocklist:
+    if stockstatistic[i]["PER"]==0:
+        stockstatistic[i]["PER"]=10**10
+sorted_dict_=dict(sorted(stockstatistic.items(), key=lambda x: x[1]['PER']))
+###############opentxt(sorted_dict_,"PER排序")
+sorted_list_PER=list(sorted_dict_.keys())
+sorted_dict_={}
+
+    #高股息，EPS由高到低排列
+sorted_dict_=dict(sorted(stockstatistic.items(), key=lambda x: x[1]['EPS'], reverse=True))
+###############opentxt(sorted_dict_,"EPS排序")
+sorted_list_EPS=list(sorted_dict_.keys())
+sorted_dict_={}
+
+#sys.exit() 封印
+
+#-----------------------------------------------------------------------
+#依照所選股數，選出左對應的股數
+    
+#def的部分
+type_num_=int(input("請選擇想要的股數"))
+if type_num_>n:
+    print("想要股數大於成份股")
+    sys.exit()
+
+def lowvar():
+    newstocklist=sorted_list_var[0:type_num_]
+    return newstocklist
+def highavg():
+    newstocklist=sorted_list_avg[0:type_num_]
+    return newstocklist
+def highPER():
+    newstocklist=sorted_list_PER[0:type_num_]
+    return newstocklist
+def highEPS():
+    newstocklist=sorted_list_EPS[0:type_num_]
+    return newstocklist
+
+#type的選擇
+
+type_str_=input("請選擇想要的投資偏好：低波動、高成長率、高本益比、高股息")
+
+
+if type_str_=="低波動":
+    newstocklist=lowvar()
+    #################print(newstocklist)
+    #################print("低波動")
+
+elif type_str_=="高成長率":
+    newstocklist=highavg()
+    #################print(newstocklist)
+    #################print("高成長率")
+
+elif type_str_=="低本益比":
+    newstocklist=highPER()
+    #################print(newstocklist)
+    #################print("低本益比")
+
+elif type_str_=="高股息":
+    newstocklist=highEPS()
+    print(newstocklist)
+    #################print("高股息")
+
+else:
+    print("請輸入低波動、高成長率、高本益比、高股息其中一個")
+    sys.exit()
+
+
+#-----------------------------------------------------------------------
+#    ＼○／
+#     /       <= 這我
+# 彡ノ)
+#━━━━━┒ 
+#┓┏┓┏┓┃ 
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃＼○／
+#┓┏┓┏┓┃  /
+#┛┗┛┗┛┃ノ)
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃川
+#┓┏┓┏┓┃＼     ／
+#┛┗┛┗┛┃＼)－○／
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃  川
+#┓┏┓┏┓┃ヾノ
+#┛┗┛┗┛┃  ｜
+#┓┏┓┏┓┃ヽ|ノ
+#┛┗┛┗┛┃  ○
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┛┗┛┗┛┃
+#┓┏┓┏┓┃
+#┃┃┃┃┃┃
+#┻┻┻┻┻┻_(┐「﹃ﾟ｡)__
+#-----------------------------------------------------------------------
+
+#算ETF, covariance(重要)，不變子程式
+
+
+#定義correlation, cov matrix 工具
+corrmatrix = [[0] * (n) for i in range(n)]
+#print(np.matrix(corrmatrix))
+
+#算corrmatrix和covmatrix
+for i in range(0,n):
+    for j in range(0,n):
+        calculate=st.correlation(retrun[stocklist[(i)]],retrun[stocklist[(j)]])
+        corrmatrix[i][j]=calculate
+
+OLDETFcorrmatrix=np.array(corrmatrix) #variance 舊ETF的corrmatrix
+#print(np.matrix(OLDETFcorrmatrix))
+
+for i in range(0,n):
+    for j in range(0,n):
+        calculate=st.covariance(retrun[stocklist[(i)]],retrun[stocklist[(j)]])
+        corrmatrix[i][j]=calculate
+
+OLDETFcovmatrix=np.array(corrmatrix) #variance 舊ETF的covmatrix
+#print(np.matrix(OLDETFcovmatrix))
+
+#各股比率
+ratio_=[]
+for i in stocklist:
+    ratio_.append(data[i]["比重"])
+ratio=np.array(ratio_)
+#print(ratio)
+
+#weiage weivar weistd sharperatio
+returnavg=[]
+for i in stocklist:
+    returnavg.append(stockstatistic[i]["avg"])
+returnavg=np.array(returnavg)
+weiavg=np.transpose(ratio).dot(returnavg) #舊ETF的weiavg
+###############print("舊ETF日平均:",weiavg,sep="")
+
+weivar=np.transpose(ratio).dot(OLDETFcovmatrix).dot(ratio) #舊ETF的weivar
+###############print("舊ETF日變異數:",weivar,sep="")
+weistd=np.sqrt(weivar) #舊ETF的weistd
+###############print("舊ETF日標準差:",weistd,sep="")
+
+#年化
+
+yearavg=(1+weiavg)**365-1
+yearvar1=np.sqrt((weistd**2+(weiavg+1)**2)**365-(1+weiavg)**730)
+yearvar2=weivar/365
+
+if yearvar1<0:
+    print("可能有計算誤差")
+    yearstd=np.nan
+else:
+    yearstd=yearvar1**(1/2)
+    
+###############print("舊ETF年化日平均:",yearavg,"\n","舊ETF年化日變異數:",yearvar1,"\n","舊ETF年化日標準差:",yearstd,sep="")
+
+if yearstd==0:
+    OLDETFsharperatio="無限大"
+else:
+    OLDETFsharperatio=(yearavg-rf)/yearstd
+
+###############print("舊ETF年化sharpe ratio:",OLDETFsharperatio,sep="")
+
+#舊ETF單日最大跌幅
+
+ratioretrun=[]
+OLDETFretrun=[]
+for i in range(0,d-1):
+    sum_=0
+    for j in range(0,n):
+        sum_=sum_+(retrun[stocklist[j]][i]*ratio_[j])
+    OLDETFretrun.append(sum_)
+    #print(OLDETFretrun)
+###############print("舊ETF每天retrun:",OLDETFretrun,sep="")
+maxretrunfall=np.min(OLDETFretrun)
+###############print("舊ETF單日最大跌幅:",maxretrunfall,sep="")
+
+#-----------------------------------------------------------------------
+
+#需要先確定那些股票需要用
+#找出最適投資組合，需用子程式
+
+#修改股數、股票
+n=type_num_
+stocklist=newstocklist
+
+    #非向量
+
+#1.expected expectation(α0)
+ExpectedyearEX=float(input("輸入期望年報酬"))
+#ExpectedyearEX=0.06 #預期年報酬
+ExpectedEX=(1+ExpectedyearEX)**(1/365)-1 
+#print(ExpectedEX)
+
+#2.risk-free retrun(γ0)
+    #rf
+
+#3.risk-free weight
+riskfreeweight=0.0
+
+    #向量
+
+#3.covmatrix(Σ) 要修改
+corrmatrix = [[0] * (n) for i in range(n)]
+for i in range(0,n):
+    for j in range(0,n):
+        calculate=st.covariance(retrun[newstocklist[i]],retrun[newstocklist[j]])
+        corrmatrix[i][j]=calculate
+
+NEWETFcovmatrix=np.array(corrmatrix) 
+
+#4.unit vector(1m)
+unitvector = np.array([[1.0]*(1) for i in range(n) ])
+#print(np.matrix(unitvector))
+
+#5.expectation vector(α_had) 要修改
+    #returnavg
+returnavg=[]
+for i in newstocklist:
+    returnavg.append(stockstatistic[i]["avg"])
+returnavg=np.array([returnavg])
+returnavg=np.transpose(returnavg)
+#print(returnavg)
+
+#6.risky assets weight vector(w_had)
+riskyweightvector = np.array([[0.0]*(1) for i in range(n)])
+#print(np.matrix(weightvector))
+
+
+    #計算
+covmatrixinverse=np.linalg.inv(NEWETFcovmatrix)
+factor=returnavg-unitvector*rf
+#print(factor)
+scalar=np.transpose(factor).dot(covmatrixinverse).dot(factor)
+#print(scalar)
+scalarnum=scalar[0,0]
+#print(scalarnum)
+Lambda=(ExpectedEX-rf)/scalarnum
+#print(Lambda)
+
+#print("")
+
+riskyweightvector=Lambda*(covmatrixinverse.dot(factor))
+
+riskyweightlist=list(list(np.transpose(riskyweightvector))[0])
+#print("risky assets權重:",riskyweightlist)
+#print(np.sum_(riskyweightvector))
+riskfreeweight=1-np.sum(riskyweightvector)
+#print("risk-free asset權重:",riskfreeweight,sep="")
+
+    #權重dict
+NEWETF={}
+for i in range(0,n):
+    statistic={"權重":float(riskyweightvector[i])}
+    NEWETF[stocklist[i]]=statistic
+NEWETF["risk-free"]={"權重":riskfreeweight}
+#print(NEWETF)
+
+#print("")
+
+#新ETF預期報酬率、變異數、標準差
+
+NEWETFEX=riskfreeweight*rf+float(np.transpose(riskyweightvector).dot(returnavg))
+NEWETFVar=round(float(np.transpose(riskyweightvector).dot(NEWETFcovmatrix).dot(riskyweightvector)),20) #可能有計算誤差
+NEWETFStd=np.sqrt(NEWETFVar)
+###############print("新ETF預期報酬率:","{:.4%}".format(NEWETFEX),"\n","新ETF變異數:",NEWETFVar,"\n","新ETF標準差:","{:.4%}".format(NEWETFStd),sep="")
+
+#年化
+
+NEWyearEX=(1+NEWETFEX)**365-1
+if NEWETFStd==0:
+    NEWyearVar1=0
+else:
+    NEWyearVar1=np.sqrt((NEWETFStd**2+(NEWETFEX+1)**2)**365-(1+NEWETFEX)**730) #電腦計算會有誤差
+NEWyearVar2=NEWETFVar/365
+NEWyearStd=np.sqrt(NEWyearVar2)
+###############print("新ETF預期年化報酬率:","{:.4%}".format(NEWyearEX),"\n","新ETF年化變異數:","{:.4%}".format(NEWyearVar1),"\n","新ETF年化標準差:","{:.4%}".format(NEWyearStd),sep="")
+
+#新ETF年化sharpe ratio
+#有可能為0
+
+if NEWyearStd==0:
+    NEWETFsharperatio="無限大"
+else:
+    NEWETFsharperatio=(NEWyearEX-rf)/NEWyearStd  
+
+###############print("新ETF年化sharpe ratio:",NEWETFsharperatio,sep="")
+
+#新ETF單日最大跌幅
+#NEWETF return，由新到舊
+ratioretrun=[] #工具
+NEWETFretrun=[]
+
+for i in range(0,d-1):
+    sum_=0
+    for j in range(0,n):
+        sum_=sum_+(retrun[newstocklist[j]][i]*riskyweightlist[j])
+    sum_=sum_+rf*riskfreeweight
+    NEWETFretrun.append(sum_)
+    #print(NEWETFretrun)
+#print("新ETF每天retrun:",NEWETFretrun,sep="")
+###############opentxt(NEWETFretrun,"新ETF每天retrun")
+
+NEWmaxretrunfall=np.min(NEWETFretrun)
+###############print("新ETF單日最大跌幅:",NEWmaxretrunfall,sep="")
+
+
+#stockprice 由新到舊
+
+price=0.0
+stockprice={}
+onestockprice=[]
+for i in newstocklist:
+    onestockprice=[]
+    for j in timelist:
+        onestockprice.append(data[i]["時間"][j]["股價"])
+    stockprice[i]=onestockprice
+###############print("由新到舊",stockprice)
+###############opentxt(stockprice,"new protfolio stock price 由新到舊")
+
+#債券價格
+
+couponrate=0.03
+CF=couponrate*1000
+PV=0
+for i in range(1,5+1):
+    PV=PV+CF/(1+rf)**i
+PV=PV+1000/(1+rf)**i
+###############print("公債價格",PV)
+
+
+#NEWETF股價，由新到舊
+
+NEWETFdict={"時間":{}}
+for i in range(d):
+    sum_=0
+    for j in range(n):
+        price=stockprice[newstocklist[j]][i]*riskyweightlist[j]
+        #print(timelist[i],price)
+        sum_=sum_+price
+    sum_=sum_+PV*riskfreeweight
+    NEWETFdict["時間"][timelist[i]]=sum_
+###############print("新ETF價格:",NEWETFdict,sep="")
+###############opentxt(NEWETFdict,"新ETF價格")
+#-----------------------------------------------------------------------
+
+#舊ETF比率：rf=0
+#           ratio_
+#
+#新ETF成分股：newstocklist
+#新ETF比率："risky assets權重",riskyweightlist
+#           "risk-free asset權重:",riskfreeweight
+#w= { code:[], w_o:[], w_n:[] }
+w={}
+
+if type_str_=="低波動":
+    w["code"]=sorted_list_var
+elif type_str_=="高成長率":
+    w["code"]=sorted_list_avg
+elif type_str_=="低本益比":
+    w["code"]=sorted_list_PER
+elif type_str_=="高股息":
+    w["code"]=sorted_list_EPS
+
+output=ratio_
+output.insert(0,0)
+w["w_o"]=output
+output=riskyweightlist                #工具
+output.insert(0,riskfreeweight)
+w["w_n"]=output
+
+#"舊ETF年化日平均:",yearavg
+#"舊ETF年化日標準差:",yearstd
+#"舊ETF年化sharpe ratio:",OLDETFsharperatio
+#"舊ETF單日最大跌幅:",maxretrunfall
+#etf_o= {return:float, std:float, sr:float, max_d:float }
+etf_o={}
+etf_o["return"]=yearavg
+etf_o["std"]=yearstd
+etf_o["sr"]=OLDETFsharperatio
+etf_o["max_d"]=maxretrunfall
+
+
+#"新ETF預期年化報酬率:","{:.4%}".format(NEWyearEX)
+#"新ETF年化標準差:","{:.4%}".format(NEWyearStd)
+#"新ETF年化sharpe ratio:",NEWETFsharperatio
+#"新ETF單日最大跌幅:",NEWmaxretrunfall
+#etf_n= {return:float, std:float, sr:float, max_d:float }
+etf_n={}
+etf_n["return"]=NEWyearEX
+etf_n["std"]=NEWyearStd
+etf_n["sr"]=NEWETFsharperatio
+etf_n["max_d"]=NEWmaxretrunfall
+
+
+#timelist
+#"新ETF價格",NEWETFdict
+#"新ETF每天retrun:",NEWETFretrun
+#etf_n_return={date:[],return:[],price[]}
+etf_n_return={}
+etf_n_return["date"]=timelist
+etf_n_return["return"]=NEWETFretrun
+output=[]
+for i in timelist:
+    output.append(NEWETFdict["時間"][i])
+etf_n_return["price"]=output
+
+###############opentxt(w,"w")
+###############opentxt(etf_o,"etf_o")
+###############opentxt(etf_n,"etf_n")
+###############opentxt(etf_n_return,"etf_n_return")
