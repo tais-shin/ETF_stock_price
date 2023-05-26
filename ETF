@@ -128,50 +128,24 @@ def etf_price_get(stock_id):#取得etf每日價格
   return stock_2
 
 
-def etf_price_get(stock_id):#取得etf每日價格
-  # etf代號
-  #stock_id = 2330  
-  user_agents = [
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-    'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 7_0_4 like Mac OS X) AppleWebKit/537.51.1 (KHTML, like Gecko) CriOS/31.0.1650.18 Mobile/11B554a Safari/8536.25',
-    'Mozilla/5.0 (iPhone; CPU iPhone OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12F70 Safari/600.1.4',
-    'Mozilla/5.0 (Linux; U; Android 4.4.4; zh-cn; M351 Build/KTU84P) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30'  
-  ]
-  user_agent = random.choice(user_agents)
-  headers = {'User-Agent': user_agent}
-
-  # 目標網址
-  url = f'https://goodinfo.tw/tw/ShowK_ChartFlow.asp?RPT_CAT=PER&STOCK_ID={stock_id}&CHT_CAT=DATE'
+def etf_elements_stock_price(etf_id): #抓etf成分股每日價格
+    # 隨機休眠時間範圍
+    min_sleep = 10
+    max_sleep = 20
+# 生成隨機秒數
+    sleep_time = random.randrange(min_sleep, max_sleep + 1)
     
-  proxies = {'http': 'http://brd-customer-hl_a2b4fb4e-zone-residential:dt5kr2aam01t@zproxy.lum-superproxy.io:22225',
-            'https': 'http://brd-customer-hl_a2b4fb4e-zone-residential:dt5kr2aam01t@zproxy.lum-superproxy.io:22225'}
-  response = requests.get(url, headers=headers, proxies=proxies, verify=False)
-    
-    
-    
-  # 載入網頁
-  #response = requests.get(url, proxies=proxy)
-  html = response.content
-  # 解析 HTML
-  soup = BeautifulSoup(response.content, 'html.parser')
-  #print(soup)
-  #抓table
-  try:
-      table = soup.find('table', {'class': 'b1 p4_0 r0_10 row_bg_2n row_mouse_over'})
-      center_elements = table.find_all(align='center')
-  except:
-      table = soup.find('table', {'class': 'b1 p4_4 r0_10 row_bg_2n row_mouse_over'})
-      center_elements = table.find_all(align='center')
-
-  list = []
-  for el in center_elements:
-      tds = el.find_all('td')
-      for td in tds:
-          list.append(td.text)
-      # 進行資料解析或存儲等操作
-  new_list = [list[i:i+12] for i in range(0, len(list), 12)]
-  stock_2 = {}#內層{日期[收盤價，EPS，PER]}
-  for i in new_list:
-    stock_2[i[0].replace("/", "")] = [float(i[1])]
-  return stock_2
+    all_stock = {}
+    etf = etfelements(etf_id)
+    keys = etf.keys()
+    keys_list = list(keys)
+    for i in keys_list:
+        id = "'"+i+"'"
+        #print(id)
+        #time.sleep(1)
+        print (stock_price_get(id))
+        #print(" ")
+        all_stock[i] = stock_price_get(i)
+        all_stock[i]["weight"] = etf[i][2]
+        time.sleep(sleep_time)
+    return all_stock
