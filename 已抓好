@@ -616,7 +616,7 @@ def generate_etf():
         #################print("高股息")
 
     else:
-        text=("請輸入低波動、高成長率、高本益比、高股息其中一個")
+        text=("請輸入低波動、高成長率、低本益比、高股息其中一個")
         m_text.config(state="normal")  # 解除唯讀模式
         m_text.insert("insert", text)#印出參數
         m_text.insert("insert", '\n')
@@ -1359,7 +1359,7 @@ def show_prefer_box(): #botton
 prefer_box = ttk.Combobox(window, values=[
 '低波動', 
 '高股息',
-'高本益比',
+'低本益比',
 '高成長率',
 ],height=5,width=25)
 prefer_box.place(x=300,y=140,anchor=NW)
