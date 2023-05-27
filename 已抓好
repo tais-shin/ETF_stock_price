@@ -922,17 +922,24 @@ def generate_etf():
     #           "risk-free asset權重:",riskfreeweight
     #w= { code:[], w_o:[], w_n:[] }
     w={}
+    output=[]
 
     if type_str_=="低波動":
         w["code"]=sorted_list_var
+        for i in range(0,len(ratio_)):
+            output.append(original[sorted_list_var[i]]["weight"])
     elif type_str_=="高成長率":
         w["code"]=sorted_list_avg
+        for i in range(0,len(ratio_)):
+            output.append(original[sorted_list_avg[i]]["weight"])
     elif type_str_=="低本益比":
         w["code"]=sorted_list_PER
+        for i in range(0,len(ratio_)):
+            output.append(original[sorted_list_PER[i]]["weight"])
     elif type_str_=="高股息":
         w["code"]=sorted_list_EPS
-
-    output=ratio_
+        for i in range(0,len(ratio_)):
+            output.append(original[sorted_list_EPS[i]]["weight"])
     output.insert(0,0)
     w["w_o"]=output
     output=riskyweightlist                #工具
