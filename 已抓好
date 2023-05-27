@@ -1360,7 +1360,7 @@ prefer_box = ttk.Combobox(window, values=[
 '低波動', 
 '高股息',
 '高本益比',
-'高成長',
+'高成長率',
 ],height=5,width=25)
 prefer_box.place(x=300,y=140,anchor=NW)
 prefer_btn = tk.Button(window, text='確認', command=show_prefer_box,bg="#f2bb05")# 建立按鈕，點擊按鈕時，執行 show 函式
