@@ -1295,7 +1295,7 @@ def generate_etf():
     
     
     count = len(w.get("code", []))
-    for i in range(count):
+    for i in range(count+1):
         if i ==0:
             weight_text.config(state="normal")  # 解除唯讀模式
             weight_text.insert("insert", "無風險資產"+"                       "+str(round(w['w_o'][i],5))+"                           "+str(round(w['w_n'][i],5)))#印出參數
