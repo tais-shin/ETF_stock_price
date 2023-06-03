@@ -54,4 +54,7 @@ print(df_daily_r)
 backtesting = pd.concat([df_etf_daily,df_daily_r],axis=1)
 backtesting.set_index(keys='Date',drop=True, inplace=True)
 # print(backtesting)
-backtesting.plot()
+BTpic=backtesting.plot()
+BTpic.set_ylabel('Growth rate of Investment')
+
+BTpic.plot()
